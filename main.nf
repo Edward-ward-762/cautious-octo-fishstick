@@ -34,9 +34,6 @@ workflow {
     .map { row ->
       [[id: row.sample_id, genome_path: row.genome_path],row.fastq_path]
     }
-    .view {meta, fastq ->
-      "Meta: $meta, Fastq: $fastq"
-    }
 
   //
   // CHANNEL: make channel from cas9point4 master samplesheet
@@ -61,7 +58,6 @@ workflow {
       meta.roi_ref = ref
       [meta, fastq]
     }
-    .view()
 
   //
   // MODULE: cat references fasta files together
