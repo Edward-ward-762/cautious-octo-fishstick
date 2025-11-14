@@ -50,13 +50,13 @@ workflow {
     .unique { tuple -> [ tuple[0], tuple[1] ] }
     .groupTuple()
   
-  ch_mask_2 = ch_mask
+  ch_mask = ch_mask
     .map{ fastq, ref ->
       [ref, fastq]
     }
 
   ch_join = ch_qc
-    .join(ch_mask_2, by: [1])
+    .join(ch_mask, by: [1])
     .map{ fastq, meta, ref -> 
       meta.roi_ref = ref
       [meta, fastq]
@@ -72,17 +72,4 @@ workflow {
   )
   ch_cat_fasta = CAT_FASTA.out.cat_out
 
-  /*
-  ch_joined = ch_qc
-    .join(ch_cat_fasta, by: [1])
-    .meta {
-      meta, fastq, cat ->
-        if (cat) {
-          [meta, fastq, cat]
-        }
-    }
-    .view { meta, fastq, cat ->
-      "Meta: $meta, Fastq: $fastq.baseName, Cat: $cat.baseName"
-    }
-  */
 }
