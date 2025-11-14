@@ -27,5 +27,8 @@ workflow {
       [row.reads, row.roi_ref]
     }
     .unique { tuple -> [ tuple[0], tuple[1] ] }
-    .view()
+    .groupTuple()
+    .view { fastq, ref ->
+      "Fastq: $fastq, Refs: $ref"
+    }
 }
