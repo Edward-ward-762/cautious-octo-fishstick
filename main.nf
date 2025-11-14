@@ -39,6 +39,8 @@ workflow {
   // CHANNEL: make channel from cas9point4 master samplesheet
   //
 
+  if(params.mask_input != 'default') {
+
   ch_mask = Channel.fromPath(params.mask_input)
     .splitCsv(header: true)
     .map { row ->
@@ -68,5 +70,5 @@ workflow {
     ch_join.map{meta, ref -> [meta, meta.roi_ref] }
   )
   ch_cat_fasta = CAT_FASTA.out.cat_out
-
+  }
 }
