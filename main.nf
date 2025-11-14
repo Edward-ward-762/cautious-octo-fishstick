@@ -55,8 +55,8 @@ workflow {
       [ref, fastq]
     }
 
-  ch_join = ch_mask_2
-    .join(ch_qc, by: [1])
+  ch_join = ch_qc
+    .join(ch_mask_2, by: [1])
     .view()
 
   //
