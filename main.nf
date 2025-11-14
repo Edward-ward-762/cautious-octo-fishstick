@@ -44,6 +44,7 @@ workflow {
     .map { row ->
       [row.reads, row.roi_ref]
     }
+    .filter { tuple -> tuple.every { it?.toString()?.trim() } }
     .unique { tuple -> [ tuple[0], tuple[1] ] }
     .groupTuple()
   
