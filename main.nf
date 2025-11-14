@@ -15,7 +15,7 @@ process CAT_FASTA{
   tuple path(meta), path(ref_files)
   
   output:
-  tuple val(meta), path("${meta.baseName}_cat.fa")
+  tuple val(meta), path("${meta.baseName}_cat.fa"), emit: cat_out
 
   script:
   """
@@ -42,4 +42,9 @@ workflow {
     CAT_FASTA(
       ch_mask.map{meta, ref -> [meta, ref] }
     )
+    ch_cat_fasta = CAT_FASTA.out.cat_out
+
+    ch_cat_fasta.view { meta, cat -> 
+      "Meta: $meta, Cat_Refs: $cat"
+    }
 }
