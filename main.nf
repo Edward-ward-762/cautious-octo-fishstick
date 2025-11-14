@@ -47,4 +47,9 @@ workflow {
     ch_cat_fasta.view { meta, cat -> 
       "Meta: $meta, Cat_Refs: $cat"
     }
+
+    ch_cat_fasta. map { fastq, cat_ref -> cat_ref, fastq }
+      .view { cat_ref, fastq ->
+        "Cat_Refs: $cat_ref, Fastq: $fastq"
+      }
 }
