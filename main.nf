@@ -9,7 +9,7 @@ process CAT_FASTA{
   tag "${meta.baseName}"
   label 'proces_low'
 
-  publishDir "$params.outdir/$task.process", mode: '$params.publish_mode'
+  publishDir "$params.outdir/$task.process", mode: "$params.publish_mode"
 
   input:
   tuple path(meta), path(ref_files)
