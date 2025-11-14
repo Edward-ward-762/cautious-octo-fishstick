@@ -19,9 +19,13 @@ workflow {
     .map { row ->
       [row.reads, row.roi_ref]
     }
-    .view { reads, ref ->
-      "Reads: $reads, Ref: $ref"
-    }
     .groupTuple()
+
+    ch_mask_2 = Channel.fromPath(params.mask_input)
+    .splitCsv(header: true)
+    .map { row ->
+      [row.reads, row.roi_ref]
+    }
+    .unique { tuple -> [ tuple[0], tuple[1] ] }
     .view()
 }
