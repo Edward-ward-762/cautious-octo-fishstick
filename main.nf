@@ -1,7 +1,27 @@
 #!/usr/bin/env nextflow
 
-params.qc_input   = 'default'
-params.mask_input = 'default'
+params.qc_input     = 'default'
+params.mask_input   = 'default'
+params.outdir       = './results'
+params.publish_mode = 'copy'
+
+process CAT_FASTA{
+  tag "$meta"
+  label 'proces_low'
+
+  publishDir "$params.outdir/$task.process", mode: '$params.publish_mode'
+
+  input:
+  tuple val(meta), path(ref_files)
+  
+  output:
+  tuple val(meta), path("${meta}_cat.fa")
+
+  script:
+  """
+  cat ${ref_files} > "${meta}_cat.fa"
+  """
+}
 
 workflow {
 
@@ -9,9 +29,6 @@ workflow {
     .splitCsv(header: true)
     .map { row ->
       [[id: row.sample_id, genome_path: row.genome_path],row.fastq_path]
-    }
-    .view { meta, file ->
-      "Sample: ${meta.id}, Genome: ${meta.genome_path}, Fastq: $file"
     }
 
   ch_mask = Channel.fromPath(params.mask_input)
@@ -31,4 +48,8 @@ workflow {
     .view { fastq, ref ->
       "Fastq: $fastq, Refs: $ref"
     }
+
+    CAT_FASTA(
+      ch_mask_2.map{meta, ref -> [meta, ref] }
+    )
 }
