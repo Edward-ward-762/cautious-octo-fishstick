@@ -30,6 +30,9 @@ workflow {
     .map { row ->
       [[id: row.sample_id, genome_path: row.genome_path],row.fastq_path]
     }
+    .view {meta, fastq ->
+      "Meta: $meta, Fastq: $fastq"
+    }
 
     ch_mask = Channel.fromPath(params.mask_input)
     .splitCsv(header: true)
@@ -46,9 +49,10 @@ workflow {
 
     ch_cat_fasta. map { fastq, cat_ref -> [ cat_ref, fastq ] }
       .view { cat_ref, fastq ->
-        "Cat_Refs: $cat_ref, Fastq: $fastq"
+        "Cat_Refs: $cat_ref.baseName, Fastq: $fastq"
       }
 
+  /*
     ch_joined = ch_qc
       .join(ch_cat_fasta, by: [1])
       .meta {
@@ -60,4 +64,5 @@ workflow {
       .view { meta, fastq, cat ->
         "Meta: $meta, Fastq: $fastq.baseName, Cat: $cat.baseName"
       }
+  */
 }
