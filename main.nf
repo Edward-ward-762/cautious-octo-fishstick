@@ -44,12 +44,20 @@ workflow {
     )
     ch_cat_fasta = CAT_FASTA.out.cat_out
 
-    ch_cat_fasta.view { meta, cat -> 
-      "Meta: $meta, Cat_Refs: $cat"
-    }
-
     ch_cat_fasta. map { fastq, cat_ref -> [ cat_ref, fastq ] }
       .view { cat_ref, fastq ->
         "Cat_Refs: $cat_ref, Fastq: $fastq"
+      }
+
+    ch_joined = ch_qc
+      .join(ch_cat_fasta, by: [1])
+      .meta {
+        meta, fastq, cat ->
+          if (cat) {
+            [meta, fastq, cat]
+          }
+      }
+      .view { meta, fastq, cat ->
+        "Meta: $meta, Fastq: $fastq.baseName, Cat: $cat.baseName"
       }
 }
