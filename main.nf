@@ -6,7 +6,7 @@ params.outdir       = './results'
 params.publish_mode = 'copy'
 
 process CAT_FASTA{
-  tag "$meta.baseName()"
+  tag "${meta.baseName}"
   label 'proces_low'
 
   publishDir "$params.outdir/$task.process", mode: '$params.publish_mode'
@@ -15,11 +15,11 @@ process CAT_FASTA{
   tuple path(meta), path(ref_files)
   
   output:
-  tuple path(meta), path("${meta.baseName()}_cat.fa")
+  tuple path(meta), path("${meta.baseName}_cat.fa")
 
   script:
   """
-  cat ${ref_files} > "${meta.baseName()}_cat.fa"
+  cat ${ref_files} > "${meta.baseName}_cat.fa"
   """
 }
 
