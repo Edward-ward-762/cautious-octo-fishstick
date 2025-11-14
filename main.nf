@@ -43,12 +43,21 @@ workflow {
   //
 
   ch_mask = Channel.fromPath(params.mask_input)
-  .splitCsv(header: true)
-  .map { row ->
-    [row.reads, row.roi_ref]
-  }
-  .unique { tuple -> [ tuple[0], tuple[1] ] }
-  .groupTuple()
+    .splitCsv(header: true)
+    .map { row ->
+      [row.reads, row.roi_ref]
+    }
+    .unique { tuple -> [ tuple[0], tuple[1] ] }
+    .groupTuple()
+  
+  ch_mask_2 = ch_mask
+    .map{ fastq, ref ->
+      [ref, fastq]
+    }
+
+  ch_join = ch_qc
+    .join(ch_mask_2, by: [1])
+    .view()
 
   //
   // MODULE: cat references fasta files together
@@ -63,7 +72,7 @@ workflow {
   // CHANNEL: Map output of CAT_FASTA
   //
 
-  ch_cat_fasta. map { fastq, cat_ref -> [ cat_ref, fastq ] }
+  ch_cat_fasta.map { fastq, cat_ref -> [ cat_ref, fastq ] }
     .view { cat_ref, fastq ->
       "Cat_Refs: $cat_ref.baseName, Fastq: $fastq"
     }
