@@ -31,25 +31,15 @@ workflow {
       [[id: row.sample_id, genome_path: row.genome_path],row.fastq_path]
     }
 
-  ch_mask = Channel.fromPath(params.mask_input)
-    .splitCsv(header: true)
-    .map { row ->
-      [row.reads, row.roi_ref]
-    }
-    .groupTuple()
-
-    ch_mask_2 = Channel.fromPath(params.mask_input)
+    ch_mask = Channel.fromPath(params.mask_input)
     .splitCsv(header: true)
     .map { row ->
       [row.reads, row.roi_ref]
     }
     .unique { tuple -> [ tuple[0], tuple[1] ] }
     .groupTuple()
-    .view { fastq, ref ->
-      "Fastq: $fastq, Refs: $ref"
-    }
 
     CAT_FASTA(
-      ch_mask_2.map{meta, ref -> [meta, ref] }
+      ch_mask.map{meta, ref -> [meta, ref] }
     )
 }
