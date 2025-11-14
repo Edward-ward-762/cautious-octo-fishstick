@@ -15,7 +15,7 @@ process CAT_FASTA{
   tuple path(meta), path(ref_files)
   
   output:
-  tuple path(meta), path("${meta.baseName}_cat.fa")
+  tuple val(meta), path("${meta.baseName}_cat.fa")
 
   script:
   """
