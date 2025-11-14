@@ -68,7 +68,7 @@ workflow {
   //
 
   CAT_FASTA(
-    ch_mask.map{meta, ref -> [meta, meta.roi_ref] }
+    ch_join.map{meta, ref -> [meta, meta.roi_ref] }
   )
   ch_cat_fasta = CAT_FASTA.out.cat_out
 
