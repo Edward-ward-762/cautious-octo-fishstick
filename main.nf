@@ -68,15 +68,6 @@ workflow {
   )
   ch_cat_fasta = CAT_FASTA.out.cat_out
 
-  //
-  // CHANNEL: Map output of CAT_FASTA
-  //
-
-  ch_cat_fasta.map { fastq, cat_ref -> [ cat_ref, fastq ] }
-    .view { cat_ref, fastq ->
-      "Cat_Refs: $cat_ref.baseName, Fastq: $fastq"
-    }
-
   /*
   ch_joined = ch_qc
     .join(ch_cat_fasta, by: [1])
