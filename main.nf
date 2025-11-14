@@ -8,7 +8,7 @@ workflow {
   ch_qc = Channel.fromPath(params.qc_input)
     .splitCsv(header: true)
     .map { row ->
-      [[id: row.sampled_id, genome_path: row.genome_path],row.fastq_path]
+      [[id: row.sample_id, genome_path: row.genome_path],row.fastq_path]
     }
     .view { meta, file ->
       "Sample: ${meta.id}, Genome: ${meta.genome_path}, Fastq: $file"
