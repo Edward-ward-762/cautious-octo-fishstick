@@ -58,7 +58,8 @@ workflow {
   ch_join = ch_qc
     .join(ch_mask_2, by: [1])
     .map{ fastq, meta, ref -> 
-      [meta + ref, fastq]
+      meta.roi_ref = [ref]
+      [meta, fastq]
     }
     .view()
 
