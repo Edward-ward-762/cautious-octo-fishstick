@@ -15,11 +15,11 @@ process CAT_FASTA{
   tuple val(meta), path(ref_files)
   
   output:
-  tuple val(meta), path("${meta}_cat.fa")
+  tuple val(meta), path("${meta.baseName()}_cat.fa")
 
   script:
   """
-  cat ${ref_files} > "${meta}_cat.fa"
+  cat ${ref_files} > "${meta.baseName()}_cat.fa"
   """
 }
 
