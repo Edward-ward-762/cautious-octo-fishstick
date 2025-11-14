@@ -25,6 +25,10 @@ process CAT_FASTA{
 
 workflow {
 
+  //
+  // CHANNEL: make channel from postplasmidsaurucQC samplesheet
+  //
+
   ch_qc = Channel.fromPath(params.qc_input)
     .splitCsv(header: true)
     .map { row ->
@@ -34,35 +38,47 @@ workflow {
       "Meta: $meta, Fastq: $fastq"
     }
 
-    ch_mask = Channel.fromPath(params.mask_input)
-    .splitCsv(header: true)
-    .map { row ->
-      [row.reads, row.roi_ref]
+  //
+  // CHANNEL: make channel from normal cas9point4 samplesheet
+  //
+
+  ch_mask = Channel.fromPath(params.mask_input)
+  .splitCsv(header: true)
+  .map { row ->
+    [row.reads, row.roi_ref]
+  }
+  .unique { tuple -> [ tuple[0], tuple[1] ] }
+  .groupTuple()
+
+  //
+  // MODULE: cat references fasta files together
+  //
+
+  CAT_FASTA(
+    ch_mask.map{meta, ref -> [meta, ref] }
+  )
+  ch_cat_fasta = CAT_FASTA.out.cat_out
+
+  //
+  // CHANNEL: Map output of CAT_FASTA
+  //
+
+  ch_cat_fasta. map { fastq, cat_ref -> [ cat_ref, fastq ] }
+    .view { cat_ref, fastq ->
+      "Cat_Refs: $cat_ref.baseName, Fastq: $fastq"
     }
-    .unique { tuple -> [ tuple[0], tuple[1] ] }
-    .groupTuple()
-
-    CAT_FASTA(
-      ch_mask.map{meta, ref -> [meta, ref] }
-    )
-    ch_cat_fasta = CAT_FASTA.out.cat_out
-
-    ch_cat_fasta. map { fastq, cat_ref -> [ cat_ref, fastq ] }
-      .view { cat_ref, fastq ->
-        "Cat_Refs: $cat_ref.baseName, Fastq: $fastq"
-      }
 
   /*
-    ch_joined = ch_qc
-      .join(ch_cat_fasta, by: [1])
-      .meta {
-        meta, fastq, cat ->
-          if (cat) {
-            [meta, fastq, cat]
-          }
-      }
-      .view { meta, fastq, cat ->
-        "Meta: $meta, Fastq: $fastq.baseName, Cat: $cat.baseName"
-      }
+  ch_joined = ch_qc
+    .join(ch_cat_fasta, by: [1])
+    .meta {
+      meta, fastq, cat ->
+        if (cat) {
+          [meta, fastq, cat]
+        }
+    }
+    .view { meta, fastq, cat ->
+      "Meta: $meta, Fastq: $fastq.baseName, Cat: $cat.baseName"
+    }
   */
 }
