@@ -22,4 +22,6 @@ workflow {
     .view { reads, ref ->
       "Reads: $reads, Ref: $ref"
     }
+    .groupTuple()
+    .view()
 }
