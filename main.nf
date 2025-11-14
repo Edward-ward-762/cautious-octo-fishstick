@@ -39,7 +39,7 @@ workflow {
     }
 
   //
-  // CHANNEL: make channel from normal cas9point4 samplesheet
+  // CHANNEL: make channel from cas9point4 master samplesheet
   //
 
   ch_mask = Channel.fromPath(params.mask_input)
